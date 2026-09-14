@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ OWNER_NAME }} — Backend Engineer{% endblock %}
+{% block content %}
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="availability-badge">
+        <span class="dot"></span> Available for new projects
+      </div>
+
+      <span class="mono" style="display:block; margin-top:22px;">backend engineer · django &amp; drf</span>
+      <h1 style="margin-top:16px;">Building the systems<br>behind the storefront.</h1>
+      <p class="role">I design and ship scalable Django &amp; DRF backends — multi-vendor marketplaces, editorial platforms, and the APIs that hold them together. Founder of Xvera Labs, currently building at TheTechFury.</p>
+
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="{% url 'projects:projects' %}">View Projects</a>
+        <a class="btn btn-ghost" href="{% url 'contact:contact' %}">Get in Touch</a>
+      </div>
+    </div>
+
+    <div class="hero-portrait-wrap">
+      <div class="portrait-circle">
+        <img src="{% static 'images/photo.png' %}" alt="{{ OWNER_NAME }}">
+      </div>
+      <div class="portrait-tag">
+        <span class="mono">founder</span>
+        Xvera Labs
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="stat-bar">
+      <div class="stat-item">
+        <span class="stat-number">{{ projects_count }}+</span>
+        <span class="mono">projects shipped</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ live_projects_count }}</span>
+        <span class="mono">live in production</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ skills_count }}+</span>
+        <span class="mono">technologies &amp; skills</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ services_count }}+</span>
+        <span class="mono">services offered</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head-row sec-head">
+      <div>
+        <span class="mono">experience</span>
+        <h2>Where I've worked</h2>
+      </div>
+      <a class="card-link" href="{% url 'experience:experience' %}">Full timeline →</a>
+    </div>
+    <div class="timeline">
+      {% for exp in experiences %}
+      <div class="tl-item">
+        <span class="mono">{{ exp.date_range|lower }}</span>
+        <h3>{{ exp.role }}</h3>
+        <div class="org">{{ exp.organization }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head-row sec-head">
+      <div>
+        <span class="mono">selected work</span>
+        <h2>Projects</h2>
+      </div>
+      <a class="card-link" href="{% url 'projects:projects' %}">All projects →</a>
+    </div>
+    <div class="projects">
+      {% for project in projects %}
+      <div class="card">
+        <div class="card-bar">
+          <span class="mono">{{ project.slug }}</span>
+          <span class="status">{{ project.get_status_display|lower }}</span>
+        </div>
+        <div class="card-body">
+          <h3 class="project-name">{{ project.title }}</h3>
+          <p>{{ project.summary|truncatewords:28 }}</p>
+
+          {% if project.tags.exists %}
+          <div class="card-section">
+            <span class="card-section-label mono">tech stack</span>
+            <div class="tags">
+              {% for tag in project.tags.all %}<span class="tag">{{ tag.name }}</span>{% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="card-links">
+            {% if project.live_url %}<a class="card-link" href="{{ project.live_url }}" target="_blank" rel="noopener">Visit live site →</a>{% endif %}
+            {% if project.github_url %}<a class="card-link" href="{{ project.github_url }}" target="_blank" rel="noopener">View repository →</a>{% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head-row sec-head">
+      <div>
+        <span class="mono">what I work with</span>
+        <h2>Toolbox</h2>
+      </div>
+      <a class="card-link" href="{% url 'skills:skills' %}">All skills →</a>
+    </div>
+    <div class="skill-groups">
+      {% for cat in skill_categories %}
+      <div class="skill-group">
+        <span class="mono">{{ cat.name|lower }}</span>
+        <div class="skill-chips">
+          {% for skill in cat.skills.all %}<span class="chip">{{ skill.name }}</span>{% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head-row sec-head">
+      <div>
+        <span class="mono">what I offer</span>
+        <h2>Services</h2>
+      </div>
+      <a class="card-link" href="{% url 'services:services' %}">All services →</a>
+    </div>
+    <div class="service-grid">
+      {% for service in services %}
+      <div class="service-cell">
+        <span class="mono">{{ forloop.counter|stringformat:"02d" }}</span>
+        <h3>{{ service.title }}</h3>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

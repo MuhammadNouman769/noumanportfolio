@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Contact — {{ OWNER_NAME }}{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div class="wrap">
+    <span class="mono">06 / contact</span>
+    <h1>Let's build something that scales.</h1>
+    <p>Fill in the form and it lands straight in the database — check it any time from the Django admin.</p>
+  </div>
+</div>
+
+<section style="padding-top:20px;">
+  <div class="wrap contact-grid">
+    <div>
+      <div class="contact-links">
+        <a href="mailto:{{ OWNER_EMAIL }}"><span class="mono">email</span> {{ OWNER_EMAIL }}</a>
+        <a href="tel:{{ OWNER_PHONE }}"><span class="mono">phone</span> {{ OWNER_PHONE }}</a>
+        <a href="{{ OWNER_LINKEDIN }}" target="_blank" rel="noopener"><span class="mono">linkedin</span> View profile ↗</a>
+        <a href="{{ OWNER_GITHUB }}" target="_blank" rel="noopener"><span class="mono">github</span> View profile ↗</a>
+      </div>
+    </div>
+    <div>
+      <form method="post" class="contact-form">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-field">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}<div class="form-errors">{{ field.errors|striptags }}</div>{% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn">Send Message</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

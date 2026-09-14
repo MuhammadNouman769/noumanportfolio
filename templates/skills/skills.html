@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Skills — {{ OWNER_NAME }}{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div class="wrap">
+    <span class="mono">05 / skills</span>
+    <h1>Toolbox</h1>
+    <p>What I reach for when designing and shipping backend systems.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="skill-groups">
+      {% for cat in categories %}
+      <div class="skill-group">
+        <span class="mono">{{ cat.name|lower }}</span>
+        <div class="skill-chips">
+          {% for skill in cat.skills.all %}<span class="chip">{{ skill.name }}</span>{% endfor %}
+        </div>
+      </div>
+      {% empty %}
+      <p style="color:var(--muted);">Run <code>python manage.py seed_data</code> to load skills content.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

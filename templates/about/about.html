@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}About — {{ OWNER_NAME }}{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div class="wrap">
+    <span class="mono">01 / about</span>
+    <h1>Profile</h1>
+    <p>A short introduction to who I am, how I work, and the foundation behind the systems I build.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap about-grid">
+    <div class="about-portrait">
+      <div class="portrait-circle small">
+        <img src="{% static 'images/photo.png' %}" alt="{{ OWNER_NAME }}">
+      </div>
+      <div class="portrait-meta">
+        <span class="mono">{{ OWNER_NAME|default:"Backend Engineer" }}</span>
+        <div class="portrait-role">Django & DRF Specialist</div>
+      </div>
+    </div>
+
+    <div class="about-body">
+      {% if profile %}
+        <p>{{ profile.bio_paragraph_1 }}</p>
+        {% if profile.bio_paragraph_2 %}<p>{{ profile.bio_paragraph_2 }}</p>{% endif %}
+        {% if profile.bio_paragraph_3 %}<p>{{ profile.bio_paragraph_3 }}</p>{% endif %}
+      {% else %}
+        <p>Run <code>python manage.py seed_data</code> to load profile content.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="edu-section">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="mono">education</span>
+      <h2>Background</h2>
+    </div>
+
+    <div class="edu-list">
+      {% for edu in education %}
+      <div class="edu-item">
+        <div class="edu-left">
+          <h3>{{ edu.degree }}</h3>
+          <div class="org">{{ edu.institution }}</div>
+        </div>
+        <span class="mono edu-date">{{ edu.date_range|lower }}</span>
+      </div>
+      {% empty %}
+      <p class="muted">No education entries yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

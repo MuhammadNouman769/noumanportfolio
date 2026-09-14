@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}Projects — {{ OWNER_NAME }}{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div class="wrap">
+    <span class="mono">03 / projects</span>
+    <h1>Selected work</h1>
+    <p>Backend-heavy builds — marketplaces, POS systems, editorial platforms, and corporate sites — each shipped end to end.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="projects">
+      {% for project in projects %}
+      <div class="card">
+        <div class="card-bar">
+          <span class="mono">{{ project.slug }}</span>
+          <span class="status">{{ project.get_status_display|lower }}</span>
+        </div>
+        <div class="card-body">
+
+          <h3 class="project-name">{{ project.title }}</h3>
+          <p>{{ project.summary }}</p>
+
+          {% if project.tags.exists %}
+          <div class="card-section">
+            <span class="card-section-label mono">tech stack</span>
+            <div class="tags">
+              {% for tag in project.tags.all %}<span class="tag">{{ tag.name }}</span>{% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+          {% if project.features.exists %}
+          <div class="card-section">
+            <span class="card-section-label mono">key features</span>
+            <div class="features-list">
+              {% for f in project.features.all %}<span class="feature-pill">{{ f.text }}</span>{% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="card-links">
+            {% if project.live_url %}<a class="card-link" href="{{ project.live_url }}" target="_blank" rel="noopener">Visit live site →</a>{% endif %}
+            {% if project.github_url %}<a class="card-link" href="{{ project.github_url }}" target="_blank" rel="noopener">View repository →</a>{% endif %}
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <p style="color:var(--muted);">Run <code>python manage.py seed_data</code> to load project content.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}
