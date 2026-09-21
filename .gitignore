@@ -48,8 +48,8 @@ local_settings.py
 static_root/
 
 # Environment variables
-# .env
-# .env.*
+.env
+.env.*
 # !.env.example
 
 # IDE / Editor
