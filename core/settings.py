@@ -1,16 +1,15 @@
-
-
 """
 Django settings for the Muhammad Nouman portfolio project.
 """
 
 from pathlib import Path
+import os
 
 from decouple import config, Csv
 
 
 # ------------------------------------------------------------------
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Build paths inside the project like this: BASE_DIR / "subdir".
 # ------------------------------------------------------------------
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,17 +30,80 @@ DEBUG = config(
     cast=bool,
 )
 
-ALLOWED_HOSTS = config(
+
+# ------------------------------------------------------------------
+# Allowed Hosts
+# ------------------------------------------------------------------
+
+# Local development hosts
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+]
+
+
+# Optional hosts from .env / Render environment
+extra_allowed_hosts = config(
     "ALLOWED_HOSTS",
-    default="127.0.0.1,localhost",
+    default="",
     cast=Csv(),
 )
 
-CSRF_TRUSTED_ORIGINS = config(
+for host in extra_allowed_hosts:
+    host = host.strip()
+    if host and host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(host)
+
+
+# Render automatically provides this variable
+render_hostname = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+
+if render_hostname:
+    render_hostname = render_hostname.strip()
+
+    if render_hostname and render_hostname not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(render_hostname)
+
+
+# ------------------------------------------------------------------
+# CSRF Trusted Origins
+# ------------------------------------------------------------------
+
+CSRF_TRUSTED_ORIGINS = []
+
+# Values manually provided through environment
+extra_csrf_origins = config(
     "CSRF_TRUSTED_ORIGINS",
     default="",
     cast=Csv(),
 )
+
+for origin in extra_csrf_origins:
+    origin = origin.strip()
+
+    if origin and origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(origin)
+
+
+# Render automatically provides the public URL
+render_url = os.environ.get("RENDER_EXTERNAL_URL")
+
+if render_url:
+    render_url = render_url.strip()
+
+    if render_url and render_url not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(render_url)
+
+elif render_hostname:
+    render_origin = f"https://{render_hostname}"
+
+    if render_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(render_origin)
+
+
+# ------------------------------------------------------------------
+# Site
+# ------------------------------------------------------------------
 
 SITE_NAME = config(
     "SITE_NAME",
@@ -98,6 +160,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = "core.urls"
 
 WSGI_APPLICATION = "core.wsgi.application"
+
 ASGI_APPLICATION = "core.asgi.application"
 
 
@@ -108,8 +171,13 @@ ASGI_APPLICATION = "core.asgi.application"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+
+        "DIRS": [
+            BASE_DIR / "templates",
+        ],
+
         "APP_DIRS": True,
+
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -132,7 +200,9 @@ _db_engine = config(
     default="django.db.backends.sqlite3",
 )
 
+
 if "sqlite3" in _db_engine:
+
     DATABASES = {
         "default": {
             "ENGINE": _db_engine,
@@ -144,25 +214,31 @@ if "sqlite3" in _db_engine:
     }
 
 else:
+
     DATABASES = {
         "default": {
             "ENGINE": _db_engine,
+
             "NAME": config(
                 "DB_NAME",
                 default="nouman_portfolio",
             ),
+
             "USER": config(
                 "DB_USER",
                 default="postgres",
             ),
+
             "PASSWORD": config(
                 "DB_PASSWORD",
                 default="",
             ),
+
             "HOST": config(
                 "DB_HOST",
                 default="127.0.0.1",
             ),
+
             "PORT": config(
                 "DB_PORT",
                 default="5432",
@@ -180,25 +256,28 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": (
             "django.contrib.auth.password_validation."
             "UserAttributeSimilarityValidator"
-        )
+        ),
     },
+
     {
         "NAME": (
             "django.contrib.auth.password_validation."
             "MinimumLengthValidator"
-        )
+        ),
     },
+
     {
         "NAME": (
             "django.contrib.auth.password_validation."
             "CommonPasswordValidator"
-        )
+        ),
     },
+
     {
         "NAME": (
             "django.contrib.auth.password_validation."
             "NumericPasswordValidator"
-        )
+        ),
     },
 ]
 
@@ -215,6 +294,7 @@ TIME_ZONE = config(
 )
 
 USE_I18N = True
+
 USE_TZ = True
 
 
@@ -243,6 +323,7 @@ STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
+
     "staticfiles": {
         "BACKEND": (
             "whitenoise.storage."
@@ -257,6 +338,8 @@ STORAGES = {
 # ------------------------------------------------------------------
 
 if not DEBUG:
+
+    # Render terminates HTTPS at its proxy.
     SECURE_PROXY_SSL_HEADER = (
         "HTTP_X_FORWARDED_PROTO",
         "https",
